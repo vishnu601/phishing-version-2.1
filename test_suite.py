@@ -2,7 +2,7 @@
 test_suite.py — PhishGuard Evaluation Suite
 Implements the testing strategy from testing_strategy.md
 
-Runs 30+ test emails across 5 categories:
+Runs 50 test emails across 8 categories:
   A. Real phishing emails
   B. Legitimate security notifications (false positive risk)
   C. Normal business emails
@@ -607,6 +607,561 @@ Lisa Thompson
 Talent Acquisition
 Talent Solutions Inc."""
     },
+
+    # ─── CATEGORY F: Additional Legitimate (harder false-positive traps) ──
+    {
+        "id": "F1",
+        "category": "F: Hard Legit",
+        "label": 0,
+        "name": "Legit password expiry notice",
+        "text": """From: it-admin@company.com
+Subject: Your password expires in 3 days
+
+Hi Vishnu,
+
+Your company domain password expires on February 15. Please update it before then
+to avoid being locked out.
+
+To change your password:
+1. Press Ctrl+Alt+Del on your Windows machine
+2. Select "Change a password"
+3. Follow the prompts
+
+If you need help, contact the IT helpdesk at ext. 2100 or helpdesk@company.com.
+
+Thanks,
+IT Administration Team
+
+Company Inc. | 123 Business Park | Hyderabad, India 500081
+© 2026 Company Inc. All rights reserved."""
+    },
+    {
+        "id": "F2",
+        "category": "F: Hard Legit",
+        "label": 0,
+        "name": "Real PayPal payment receipt",
+        "text": """From: service@paypal.com
+Subject: Receipt for your payment to Spotify
+
+Hi Vishnu,
+
+You sent a payment of $9.99 USD to Spotify AB.
+
+Transaction ID: 4WN39284XT9271845
+Date: February 12, 2026
+Payment method: Visa ending in 4829
+
+It may take a few moments for this transaction to appear in your account.
+
+Questions? Visit the PayPal Resolution Center.
+https://www.paypal.com/disputes
+
+PayPal
+Help & Contact | Security | Apps
+
+Please don't reply to this email. To get in touch, go to https://www.paypal.com/help
+Call us at 1-888-221-1161
+
+PayPal, Inc. 2211 North First Street, San Jose, CA 95131
+© 2026 PayPal. All rights reserved. | Privacy | Legal | Unsubscribe"""
+    },
+    {
+        "id": "F3",
+        "category": "F: Hard Legit",
+        "label": 0,
+        "name": "Real Apple ID two-factor alert",
+        "text": """From: appleid@id.apple.com
+Subject: Your Apple ID was used to sign in to iCloud
+
+Dear Vishnu,
+
+Your Apple ID (vishnu@icloud.com) was used to sign in to iCloud via a web browser.
+
+Date and Time: February 12, 2026, 2:15 PM IST
+Operating System: Windows 10
+
+If you recently signed in, no further action is required. If you did not
+sign in recently, visit https://appleid.apple.com to update your security settings.
+
+Apple Support: https://support.apple.com or call 1-800-275-2273
+
+Apple ID | Support | Privacy Policy
+© 2026 Apple Inc. One Apple Park Way, Cupertino, CA 95014. All rights reserved."""
+    },
+    {
+        "id": "F4",
+        "category": "F: Hard Legit",
+        "label": 0,
+        "name": "Insurance renewal reminder",
+        "text": """From: renewals@licindia.in
+Subject: Policy Renewal Reminder — Policy #48291034
+
+Dear Vishnu Mukkavilli,
+
+This is a reminder that your LIC policy (Policy No: 48291034) premium of ₹12,500
+is due on February 28, 2026.
+
+Payment options:
+- Online: https://licindia.in/pay-premium
+- Call: 1800-200-5577 (toll-free)
+- Visit your nearest LIC branch
+
+Thank you for choosing LIC.
+
+Life Insurance Corporation of India
+Registered Office: Yogakshema, Jeevan Bima Marg, Mumbai 400021
+IRDAI Reg. No. 512 | © 2026 LIC. All rights reserved. | Unsubscribe"""
+    },
+    {
+        "id": "F5",
+        "category": "F: Hard Legit",
+        "label": 0,
+        "name": "AWS billing notification",
+        "text": """From: no-reply@amazonaws.com
+Subject: Your AWS bill for January 2026 is available
+
+Hello,
+
+Your AWS bill for January 2026 is now available. Your total charges are $47.23.
+
+To view your bill: https://console.aws.amazon.com/billing/home
+
+Payment will be processed automatically using your default payment method.
+
+For questions about your bill, visit https://aws.amazon.com/support or
+call 1-206-922-0514.
+
+Amazon Web Services, Inc.
+410 Terry Avenue N., Seattle, WA 98109
+© 2026 Amazon Web Services. All rights reserved. | Privacy | Terms | Unsubscribe"""
+    },
+    {
+        "id": "F6",
+        "category": "F: Hard Legit",
+        "label": 0,
+        "name": "HR onboarding email",
+        "text": """From: onboarding@company.com
+Subject: Welcome aboard! Your first day checklist
+
+Hi Vishnu,
+
+Welcome to Company Inc.! We're excited to have you join the Engineering team.
+
+Here's your Day 1 checklist:
+1. Collect your laptop from IT (Room 204, Building A)
+2. Complete tax forms (Form W-4, I-9) with HR
+3. Set up your email and Slack account
+4. Attend orientation at 10 AM in Conference Room B
+
+Your manager Priya Sharma will meet you at reception at 9:00 AM.
+
+Questions? Contact onboarding@company.com or call HR at ext. 1200.
+
+Best,
+HR Team
+Company Inc. | People Operations"""
+    },
+    {
+        "id": "F7",
+        "category": "F: Hard Legit",
+        "label": 0,
+        "name": "Real Zoom meeting invite",
+        "text": """From: no-reply@zoom.us
+Subject: Vishnu Mukkavilli is inviting you to a scheduled Zoom meeting
+
+Hi,
+
+Vishnu Mukkavilli is inviting you to a scheduled Zoom meeting.
+
+Topic: Weekly Design Review
+Time: Feb 13, 2026 03:00 PM IST
+
+Join Zoom Meeting:
+https://zoom.us/j/92834761029?pwd=abc123
+
+Meeting ID: 928 3476 1029
+Passcode: 482910
+
+Dial in: +91 22 7127 4127
+
+Zoom Video Communications, Inc.
+55 Almaden Blvd, Suite 600, San Jose, CA 95113
+Privacy Policy | Support | Unsubscribe"""
+    },
+    {
+        "id": "F8",
+        "category": "F: Hard Legit",
+        "label": 0,
+        "name": "Legit IT system migration notice",
+        "text": """From: sysadmin@company.com
+Subject: ACTION REQUIRED: Email migration to Office 365
+
+Dear All,
+
+We are migrating from our current email system to Microsoft Office 365 this weekend (Feb 15-16).
+
+What you need to do:
+1. Save any important drafts before Friday 5 PM
+2. After migration, log in at https://outlook.office365.com with your company credentials
+3. Your existing password will work — no need to create a new one
+
+Downtime: Saturday 10 PM to Sunday 6 AM IST
+Support: helpdesk@company.com or ext. 2100
+
+This migration has been approved by the CTO. For more details, see the FAQ document
+on the company intranet.
+
+Regards,
+Systems Administration Team
+Company Inc. IT Department"""
+    },
+
+    # ─── CATEGORY G: Additional Phishing (harder to detect) ──────────────
+    {
+        "id": "G1",
+        "category": "G: Hard Phishing",
+        "label": 1,
+        "name": "DocuSign impersonation",
+        "text": """From: dse@docusign-notifications.xyz
+Subject: Please review and sign your document
+
+Vishnu Mukkavilli,
+
+Sarah Johnson has sent you a document to review and sign.
+
+REVIEW DOCUMENT: http://docusign-notifications.xyz/sign/doc-48291
+
+Document: Employment Agreement — Updated Terms
+Sent: February 12, 2026
+
+Please sign within 3 days.
+
+Do not share this email. The link contains a secure access code.
+
+Powered by DocuSign"""
+    },
+    {
+        "id": "G2",
+        "category": "G: Hard Phishing",
+        "label": 1,
+        "name": "Crypto airdrop scam",
+        "text": """From: rewards@eth-airdrop.tk
+Subject: Claim Your Free ETH Airdrop — 2.5 ETH Waiting!
+
+Dear Crypto User,
+
+Congratulations! Your wallet has been selected for an exclusive Ethereum airdrop.
+
+You've been awarded 2.5 ETH (approx. $7,500)!
+
+Claim now before it expires:
+http://eth-airdrop.tk/claim?wallet=0x8f2a
+
+Offer expires in 24 hours. Unclaimed tokens will be redistributed.
+
+Ethereum Foundation Rewards Program"""
+    },
+    {
+        "id": "G3",
+        "category": "G: Hard Phishing",
+        "label": 1,
+        "name": "LinkedIn connection phishing",
+        "text": """From: notifications@linkedln-mail.ga
+Subject: You have 3 new connection requests
+
+Hi Vishnu,
+
+You have 3 pending connection requests:
+- Rajesh Kumar, CTO at TechCorp
+- Sarah Williams, VP Engineering at Google
+- Mark Johnson, Director at Microsoft
+
+Accept all: http://linkedln-mail.ga/accept-connections
+
+These requests expire in 7 days.
+
+LinkedIn Corporation"""
+    },
+    {
+        "id": "G4",
+        "category": "G: Hard Phishing",
+        "label": 1,
+        "name": "Tax refund phishing",
+        "text": """From: refunds@income-tax-portal.ml
+Subject: Income Tax Refund — ₹23,450 Credited
+
+Dear Taxpayer,
+
+Your income tax refund of ₹23,450 for AY 2025-26 has been processed.
+
+However, we were unable to credit the amount due to incorrect bank details on file.
+
+Please update your bank account information:
+http://income-tax-portal.ml/update-bank
+
+Your refund will be reversed if not updated within 5 business days.
+
+Income Tax Department
+Government of India"""
+    },
+    {
+        "id": "G5",
+        "category": "G: Hard Phishing",
+        "label": 1,
+        "name": "Dropbox shared file phishing",
+        "text": """From: no-reply@dropbox-shared.cf
+Subject: John shared "Q4 Financial Report.pdf" with you
+
+Hi,
+
+John Smith shared a file with you on Dropbox.
+
+📄 Q4 Financial Report.pdf (2.4 MB)
+
+View file: http://dropbox-shared.cf/view/q4-report-48291
+
+This link expires in 48 hours.
+
+The Dropbox Team"""
+    },
+    {
+        "id": "G6",
+        "category": "G: Hard Phishing",
+        "label": 1,
+        "name": "Fake shipping notification",
+        "text": """From: tracking@fedex-delivery.buzz
+Subject: FedEx: Delivery attempt failed — Action required
+
+Dear Customer,
+
+We attempted to deliver your package (Tracking #7829104382) but nobody was available.
+
+Reschedule delivery or pick up from nearest location:
+http://fedex-delivery.buzz/reschedule?pkg=7829104382
+
+If no action is taken within 3 days, the package will be returned to sender.
+
+FedEx Express"""
+    },
+    {
+        "id": "G7",
+        "category": "G: Hard Phishing",
+        "label": 1,
+        "name": "Government impersonation",
+        "text": """From: alerts@uidai-verification.top
+Subject: URGENT: Your Aadhaar card has been deactivated
+
+Dear Citizen,
+
+Your Aadhaar card (XXXX-XXXX-4829) has been deactivated due to
+incomplete KYC verification.
+
+To reactivate immediately:
+http://uidai-verification.top/kyc-update
+
+Failure to verify within 48 hours will result in permanent deactivation
+of all linked services (bank accounts, mobile numbers, PAN).
+
+UIDAI
+Government of India"""
+    },
+
+    # ─── CATEGORY H: More edge cases and mixed signals ───────────────────
+    {
+        "id": "H1",
+        "category": "H: Mixed Signals",
+        "label": 0,
+        "name": "Real credit card statement",
+        "text": """From: statements@hdfcbank.com
+Subject: Your HDFC Credit Card Statement — January 2026
+
+Dear Vishnu Mukkavilli,
+
+Your credit card statement for January 2026 is ready.
+
+Card ending in: 4829
+Statement period: Jan 1 – Jan 31, 2026
+Total amount due: ₹15,230.00
+Minimum due: ₹763.00
+Payment due date: February 18, 2026
+
+Pay online: https://netbanking.hdfcbank.com
+Pay by phone: 1800-202-6161 (toll-free)
+
+HDFC Bank Ltd. | CIN: L65920MH1994PLC080618
+© 2026 HDFC Bank. All rights reserved. | Privacy Policy | Unsubscribe"""
+    },
+    {
+        "id": "H2",
+        "category": "H: Mixed Signals",
+        "label": 0,
+        "name": "Auto-reply out of office",
+        "text": """From: anil.kumar@company.com
+Subject: Re: Q4 Budget Review — Out of Office
+
+Hi,
+
+Thank you for your email. I am currently out of the office from
+February 10-16 with limited access to email.
+
+For urgent matters, please contact:
+- Priya Sharma (priya.sharma@company.com) for engineering
+- Finance helpdesk at ext. 3400
+
+I will respond to your email upon my return.
+
+Best regards,
+Anil Kumar
+Finance Manager"""
+    },
+    {
+        "id": "H3",
+        "category": "H: Mixed Signals",
+        "label": 0,
+        "name": "Internal security audit notice",
+        "text": """From: ciso@company.com
+Subject: Annual Security Awareness Training — Mandatory
+
+Hi Team,
+
+As part of our annual security compliance requirements, all employees
+must complete the Security Awareness Training module by February 28.
+
+Access the training: https://company.learningportal.com/security-2026
+
+Important:
+- Takes approximately 30 minutes
+- Must score 80% or above on the quiz
+- Completion is tracked and reported to management
+
+Non-compliance may affect your compliance status.
+
+Thanks,
+Rajesh Gupta
+Chief Information Security Officer
+Company Inc. | Security & Compliance"""
+    },
+    {
+        "id": "H4",
+        "category": "H: Mixed Signals",
+        "label": 0,
+        "name": "Charity donation receipt",
+        "text": """From: receipts@giveindia.org
+Subject: Thank you for your donation!
+
+Dear Vishnu,
+
+Thank you for your generous donation of ₹5,000 to the Education for All Fund.
+
+Donation details:
+- Amount: ₹5,000.00
+- Date: February 10, 2026
+- Receipt No: GI-2026-048291
+- Section 80G eligible: Yes
+
+Download your tax receipt: https://giveindia.org/receipts/GI-2026-048291
+
+Your contribution will help provide education to 10 children for a month.
+
+Thank you for making a difference!
+
+GiveIndia Foundation
+14th Floor, Birla Aurora, Dr. Annie Besant Road, Mumbai 400018
+80G Registration: CIT(E)/80G/2020-21/048291
+Contact: support@giveindia.org | 1800-200-5577 | Unsubscribe"""
+    },
+    {
+        "id": "H5",
+        "category": "H: Mixed Signals",
+        "label": 0,
+        "name": "Real LinkedIn notification",
+        "text": """From: notifications-noreply@linkedin.com
+Subject: Vishnu, you appeared in 23 searches this week
+
+Hi Vishnu,
+
+You appeared in 23 searches this week.
+
+Top searchers' companies:
+- Google
+- Microsoft
+- Amazon
+
+See all search appearances: https://www.linkedin.com/me/search-appearances
+
+Keep your profile updated to attract more opportunities.
+
+LinkedIn Corporation | 1000 W Maude Ave, Sunnyvale, CA 94085
+You are receiving LinkedIn notification emails.
+Unsubscribe | Help Center | Privacy Policy"""
+    },
+    {
+        "id": "H6",
+        "category": "H: Mixed Signals",
+        "label": 1,
+        "name": "Spear phishing with real context",
+        "text": """From: priya.sharma@company-hr.cf
+Subject: Re: Your performance review — action needed
+
+Hi Vishnu,
+
+Following up on your recent performance review discussion, I need you to
+update your goals in our new HR system before our next 1-on-1.
+
+Please log in and update your profile:
+http://company-hr.cf/performance/update-goals
+
+This needs to be done by end of week.
+
+Thanks,
+Priya"""
+    },
+    {
+        "id": "H7",
+        "category": "H: Mixed Signals",
+        "label": 0,
+        "name": "Legit employee referral email",
+        "text": """From: referrals@company.com
+Subject: Employee Referral Bonus — Congratulations!
+
+Hi Vishnu,
+
+Great news! Your referral, Arun Reddy, has successfully completed 90 days
+with Company Inc. You are eligible for the referral bonus of ₹50,000.
+
+The bonus will be credited in your next payroll cycle (February 28).
+
+Details:
+- Referred candidate: Arun Reddy
+- Department: Engineering
+- Start date: November 12, 2025
+- Referral ID: REF-2025-4829
+
+Thank you for helping us grow!
+
+People Operations Team
+Company Inc. | HR Department
+© 2026 Company Inc."""
+    },
+    {
+        "id": "H8",
+        "category": "H: Mixed Signals",
+        "label": 1,
+        "name": "WhatsApp verification scam",
+        "text": """From: verify@whatsapp-support.top
+Subject: WhatsApp Account Verification Required
+
+Your WhatsApp account has been flagged for suspicious activity.
+
+To prevent account suspension, verify your identity immediately:
+http://whatsapp-support.top/verify-account
+
+Enter your phone number and the 6-digit code sent to your device.
+
+Failure to verify within 24 hours will result in permanent account deletion.
+
+WhatsApp Support Team"""
+    },
 ]
 
 
@@ -618,7 +1173,7 @@ def run_evaluation():
     """Run all test emails through predict_email and compute metrics."""
     results = []
     print("=" * 80)
-    print("PhishGuard Evaluation Suite — Running 30 test emails")
+    print(f"PhishGuard Evaluation Suite — Running {len(TEST_EMAILS)} test emails")
     print("=" * 80)
 
     for i, test in enumerate(TEST_EMAILS):

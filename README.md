@@ -19,12 +19,26 @@ Phishing emails are the **#1 cyber attack vector**, costing businesses **$4.76 b
 | Metric | Score |
 |:---|:---|
 | **Precision** | 100% |
-| **Recall** | 100% |
-| **F1 Score** | 1.000 |
-| **False Positive Rate** | 0.0% |
+| **Recall** | 95.5% |
+| **F1 Score** | 0.977 |
+| **False Positive Rate** | 0% |
+| **Accuracy** | 98% |
 | **Explainability** | 100% — every verdict explains *why* |
 
-> Tested on **26 hand-crafted emails** across 5 categories: real phishing, legitimate security alerts, business emails, edge cases, and adversarial patterns.
+> Evaluated on **50 curated emails** across 8 categories — including adversarial phishing, hard false-positive traps, and mixed-signal edge cases.
+
+| Test Category | Count | Accuracy |
+|:---|:---|:---|
+| Real Phishing Emails | 8 | 100% |
+| Legitimate Security Alerts | 5 | 100% |
+| Normal Business Emails | 5 | 100% |
+| Edge Cases | 5 | 100% |
+| Adversarial Patterns | 3 | 100% |
+| Hard Legit (false-positive traps) | 8 | 100% |
+| Hard Phishing (subtle attacks) | 7 | 86% |
+| Mixed Signals | 8 | 100% |
+
+> **Known limitation:** Very short phishing with no suspicious TLD and no explicit action words (e.g., a plain shared file link) can be missed. The model requires at least 2 structural indicators to override a low ML score.
 
 ---
 
@@ -160,7 +174,7 @@ phish-detector/
 ├── predict.py               # 4-layer prediction engine
 ├── feature_engineering.py   # 24-feature structural extractor
 ├── train_model.py           # ML training pipeline
-├── test_suite.py            # 26-email evaluation suite
+├── test_suite.py            # 50-email evaluation suite
 ├── evaluation_report.json   # Proof: 100% precision/recall
 │
 ├── chrome-extension/
