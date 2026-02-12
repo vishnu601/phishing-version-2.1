@@ -1,0 +1,35 @@
+{
+    "manifest_version": 3,
+    "name": "PhishGuard — AI Phishing Detector",
+    "version": "1.0.0",
+    "description": "Detects phishing emails in Gmail and Outlook Web using AI-powered structural analysis.",
+    "icons": {
+        "16": "icons/icon16.png",
+        "48": "icons/icon48.png",
+        "128": "icons/icon128.png"
+    },
+    "permissions": [],
+    "host_permissions": [
+        "http://localhost:5001/*"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "https://mail.google.com/*",
+                "https://outlook.live.com/*",
+                "https://outlook.office.com/*",
+                "https://outlook.office365.com/*"
+            ],
+            "js": [
+                "contentScript.js"
+            ],
+            "css": [
+                "styles.css"
+            ],
+            "run_at": "document_idle"
+        }
+    ],
+    "background": {
+        "service_worker": "background.js"
+    }
+}

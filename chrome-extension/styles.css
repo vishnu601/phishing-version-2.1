@@ -1,0 +1,250 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   PhishGuard — Chrome Extension Styles
+   Designed to look native in Gmail and Outlook Web
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── Detect Phishing Button ─────────────────────────────────────────── */
+.phishguard-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  margin-left: 12px;
+  border: 1px solid #dadce0;
+  border-radius: 18px;
+  background: #fff;
+  color: #3c4043;
+  font-family: "Google Sans", Roboto, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  vertical-align: middle;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  line-height: 1;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.phishguard-btn:hover {
+  background: #f1f3f4;
+  border-color: #c6c9cc;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.phishguard-btn:active {
+  background: #e8eaed;
+}
+
+.phishguard-btn.phishguard-loading {
+  opacity: 0.8;
+  cursor: wait;
+}
+
+.phishguard-btn svg {
+  flex-shrink: 0;
+}
+
+/* ── Spinner ─────────────────────────────────────────────────────────── */
+.phishguard-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #dadce0;
+  border-top-color: #1a73e8;
+  border-radius: 50%;
+  animation: phishguard-spin 0.7s linear infinite;
+}
+
+@keyframes phishguard-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Result Panel ────────────────────────────────────────────────────── */
+.phishguard-panel {
+  margin: 8px 0 16px 0;
+  border-radius: 12px;
+  font-family: "Google Sans", Roboto, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid;
+  animation: phishguard-slideIn 0.3s ease;
+}
+
+@keyframes phishguard-slideIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Severity variants */
+.phishguard-panel.phishguard-safe {
+  border-color: #ceead6;
+  background: #f0faf3;
+}
+.phishguard-panel.phishguard-warning {
+  border-color: #fde293;
+  background: #fef9e7;
+}
+.phishguard-panel.phishguard-danger {
+  border-color: #f5c6cb;
+  background: #fff5f5;
+}
+.phishguard-panel.phishguard-error {
+  border-color: #dadce0;
+  background: #f8f9fa;
+}
+
+/* ── Panel Header ────────────────────────────────────────────────────── */
+.phishguard-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  font-weight: 600;
+}
+
+.phishguard-safe .phishguard-panel-header   { color: #137333; background: rgba(19, 115, 51, 0.06); }
+.phishguard-warning .phishguard-panel-header { color: #b45309; background: rgba(180, 83, 9, 0.06); }
+.phishguard-danger .phishguard-panel-header  { color: #c5221f; background: rgba(197, 34, 31, 0.06); }
+.phishguard-error .phishguard-panel-header   { color: #5f6368; background: rgba(95, 99, 104, 0.06); }
+
+.phishguard-verdict {
+  font-size: 14px;
+}
+
+.phishguard-score {
+  font-size: 12px;
+  font-weight: 400;
+  opacity: 0.8;
+  margin-left: auto;
+}
+
+.phishguard-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.5;
+  padding: 0 4px;
+  line-height: 1;
+  transition: opacity 0.15s;
+}
+.phishguard-close:hover {
+  opacity: 1;
+}
+
+/* ── Panel Body ──────────────────────────────────────────────────────── */
+.phishguard-panel-body {
+  padding: 10px 16px 14px;
+  color: #3c4043;
+}
+
+.phishguard-section {
+  margin-bottom: 10px;
+}
+
+.phishguard-section strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  opacity: 0.7;
+}
+
+.phishguard-section ul {
+  margin: 0;
+  padding: 0 0 0 4px;
+  list-style: none;
+}
+
+.phishguard-section li {
+  padding: 3px 0;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* ── Breakdown Bars ──────────────────────────────────────────────────── */
+.phishguard-details {
+  margin-top: 8px;
+}
+
+.phishguard-details summary {
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  color: #5f6368;
+  user-select: none;
+  padding: 4px 0;
+}
+
+.phishguard-breakdown {
+  margin-top: 6px;
+}
+
+.phishguard-breakdown-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.phishguard-breakdown-label {
+  flex: 0 0 180px;
+  font-size: 11px;
+  color: #5f6368;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.phishguard-breakdown-bar {
+  flex: 1;
+  height: 6px;
+  background: #e8eaed;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.phishguard-breakdown-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.phishguard-breakdown-fill.phishguard-safe    { background: #34a853; }
+.phishguard-breakdown-fill.phishguard-warning { background: #f9ab00; }
+.phishguard-breakdown-fill.phishguard-danger  { background: #ea4335; }
+
+.phishguard-breakdown-pct {
+  flex: 0 0 36px;
+  font-size: 11px;
+  color: #80868b;
+  text-align: right;
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────── */
+.phishguard-footer {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  font-size: 11px;
+  color: #80868b;
+}
+
+/* ── Hint (error state) ──────────────────────────────────────────────── */
+.phishguard-hint {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #80868b;
+}
+
+.phishguard-hint code {
+  background: #e8eaed;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+}
