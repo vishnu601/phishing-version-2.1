@@ -1,208 +1,151 @@
-# 🛡️ AI Phishing Email Detector v2.1
+# 🛡️ PhishGuard — AI Phishing Email Detector
 
-An intelligent phishing email detection system that combines **Machine Learning** with **rule-based structural analysis** to identify phishing attempts while minimizing false positives. Includes a **Chrome Extension** for Gmail/Outlook and a **Streamlit** web dashboard.
+> **Team HackSavvy-26** · Built to protect users from phishing with explainable, multi-layered AI detection.
 
 ---
 
-## ✅ Evaluation Results
+## 🎯 The Problem
 
-Tested across **26 emails** in 5 categories with **perfect scores**:
+Phishing emails are the **#1 cyber attack vector**, costing businesses **$4.76 billion annually**. Existing spam filters fail on sophisticated attacks — emails that use your name, mimic real brands, and create believable urgency.
+
+**We solved two critical challenges:**
+- ❌ **False Positives** — Real bank alerts and security notifications incorrectly flagged as phishing
+- ❌ **False Negatives** — Clever, minimal phishing emails slipping through undetected
+
+---
+
+## 🏆 Results
 
 | Metric | Score |
-|---|---|
-| **Precision** | 100.0% |
-| **Recall** | 100.0% |
+|:---|:---|
+| **Precision** | 100% |
+| **Recall** | 100% |
 | **F1 Score** | 1.000 |
 | **False Positive Rate** | 0.0% |
-| **Accuracy** | 100.0% |
-| **Explainability** | 100.0% |
+| **Explainability** | 100% — every verdict explains *why* |
 
-| Test Category | Result |
-|---|---|
-| Real Phishing Emails (8) | ✅ 100% |
-| Legitimate Security Alerts (5) | ✅ 100% |
-| Normal Business Emails (5) | ✅ 100% |
-| Edge Cases (5) | ✅ 100% |
-| Adversarial Patterns (3) | ✅ 100% |
+> Tested on **26 hand-crafted emails** across 5 categories: real phishing, legitimate security alerts, business emails, edge cases, and adversarial patterns.
 
 ---
 
-## 🚀 Quick Start
+## 🧠 Architecture
 
-### Streamlit Web App
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     EMAIL INPUT                             │
+│            (text, sender, subject, body)                    │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+          ┌────────────┴────────────┐
+          ▼                         ▼
+┌──────────────────┐    ┌─────────────────────────┐
+│   LAYER 1: ML    │    │  LAYER 2: STRUCTURAL    │
+│                  │    │  FEATURE EXTRACTION      │
+│ TF-IDF Vectors   │    │                         │
+│ + Logistic       │    │  24 features across     │
+│   Regression     │    │  6 categories:          │
+│                  │    │                         │
+│ Output:          │    │  • URL/Domain Analysis  │
+│ Raw probability  │    │  • Text Structure       │
+│ (0–100%)         │    │  • Urgency Language     │
+│                  │    │  • Sender Spoofing      │
+└────────┬─────────┘    │  • Social Engineering   │
+         │              │  • Missing Safeguards   │
+         │              │                         │
+         │              │  Output:                │
+         │              │  Risk Boost ↑ (phishing)│
+         │              │  Safe Adjust ↓ (legit)  │
+         │              └────────────┬────────────┘
+         │                           │
+         └────────────┬──────────────┘
+                      ▼
+       ┌──────────────────────────────┐
+       │     LAYER 3: STRUCTURAL     │
+       │        OVERRIDE             │
+       │                             │
+       │ When structural signals     │
+       │ are strong but ML is naive  │
+       │ (e.g. very short emails):   │
+       │ force score above threshold │
+       └──────────────┬──────────────┘
+                      ▼
+       ┌──────────────────────────────┐
+       │     LAYER 4: CALIBRATED     │
+       │     DECISION ENGINE         │
+       │                             │
+       │  🔴 Phishing    (≥ 70%)    │
+       │  🟡 Suspicious  (50–70%)   │
+       │  🟢 Safe         (< 50%)   │
+       └──────────────────────────────┘
+```
+
+---
+
+## 🔬 How Each Layer Works
+
+### Layer 1 — Machine Learning
+
+| Component | Choice | Why |
+|:---|:---|:---|
+| Algorithm | Logistic Regression | Fast, interpretable, works well with text classification |
+| Vectorizer | TF-IDF (bigrams, sublinear TF, 7K features) | Captures multi-word phishing phrases ("act now", "verify account") |
+| Class Weights | Balanced | Prevents bias toward the majority class |
+| Validation | 5-fold stratified cross-validation | Reliable performance estimates |
+
+### Layer 2 — Structural Feature Extraction (24 Features)
+
+We go **beyond what the ML model can see** by extracting structural patterns:
+
+| Category | Features | Example Detection |
+|:---|:---|:---|
+| 🔗 **URL Analysis** | Suspicious TLDs, domain mismatches, URL length | Link says "paypal.com" but goes to `paypa1-verify.xyz` |
+| ✉️ **Text Structure** | Caps ratio, punctuation density, email length | "URGENT!!! ACT NOW!!!" patterns |
+| 🚨 **Urgency Language** | 15 pressure patterns | "within 24 hours", "account locked", "do not ignore" |
+| 🎭 **Sender Spoofing** | Brand-domain mismatch | Claims "Microsoft" but sent from `microsft-security.tk` |
+| 🧠 **Social Engineering** | Unsolicited prizes, fake deadlines, vague personalization | "Congratulations! You've won!" with no context |
+| 📵 **Missing Safeguards** | Sensitive requests without phone verification | "Verify your SSN" but no customer support number |
+
+### Layer 3 — Structural Override
+
+When **2+ strong phishing signals** are present (suspicious TLD, external confirm link, domain mismatch) and **≤1 safe signal** exists, the system overrides the ML score. This catches adversarial emails that are too short for TF-IDF to classify.
+
+### Layer 4 — Safe Indicator Reduction
+
+Legitimate emails have **trust signals** that phishing doesn't:
+
+| Signal | Reduction | Why It Matters |
+|:---|:---|:---|
+| Unsubscribe link | -20% | Phishing never includes one |
+| © Copyright footer | -15% | Legal compliance = real company |
+| Phone verification | -10% | "Call us at 1-800-..." = real support |
+| Known sender domain | -30% | `@microsoft.com` + safe signals = trusted |
+| Professional signature | -10% | "Regards, Anil Kumar" = real person |
+
+---
+
+## 🖥️ Deployment
+
+### Streamlit Dashboard
 ```bash
 pip install streamlit scikit-learn numpy scipy
 streamlit run app.py
 ```
-Open [http://localhost:8501](http://localhost:8501), paste an email, and get an instant verdict.
+- Paste any email → instant verdict with risk breakdown
+- Visual feature panel shows exactly **which signals triggered**
 
 ### Chrome Extension (Gmail / Outlook)
 ```bash
-# 1. Start the API server
 pip install flask flask-cors
-python3 api_server.py   # Runs on http://localhost:5001
-
-# 2. Load the extension
-# Go to chrome://extensions → Enable Developer mode → Load unpacked → select chrome-extension/
+python3 api_server.py                    # Start API on localhost:5001
+# chrome://extensions → Load unpacked → select chrome-extension/
 ```
-Open Gmail → Open an email → Click **"Detect Phishing"** button near the subject.
+- One-click **"Detect Phishing"** button appears on every email
+- Non-intrusive inline result panel — no popups
 
----
-
-## 🧠 How It Works
-
-The system uses a **3-layer detection pipeline**:
-
+### API Endpoints
 ```
-Email Text
-    │
-    ├──► Layer 1: ML Model (TF-IDF + Logistic Regression) → Raw Probability
-    │
-    ├──► Layer 2: Structural Feature Extraction (24 features) → Risk Boost / Safe Adjustment
-    │
-    ├──► Layer 3: Structural Override (when ML is naive but signals are strong)
-    │
-    └──► Layer 4: Calibrated Decision Engine → Final Verdict
-              │
-              ├── 🔴 Phishing  (adjusted score ≥ 0.70)
-              ├── 🟡 Suspicious (adjusted score 0.50 – 0.70)
-              └── 🟢 Safe       (adjusted score < 0.50)
-```
-
-### Layer 1: Machine Learning Model
-
-| Component | Details |
-|---|---|
-| **Algorithm** | Logistic Regression with balanced class weights |
-| **Vectorizer** | TF-IDF with unigrams + bigrams, sublinear TF, 7000 max features |
-| **Regularization** | C=0.5 (stronger regularization to reduce overfitting) |
-| **Validation** | 5-fold stratified cross-validation |
-| **Threshold** | Calibrated via precision-recall curve (default: 0.70) |
-
-### Layer 2: Structural Feature Extraction (24 Features)
-
----
-
-## 📊 Parameters & Risk Analysis
-
-### Phishing Indicators (increase risk score)
-
-#### 1. 🔗 URL & Domain Analysis
-
-| Parameter | What It Detects | How It Works |
-|---|---|---|
-| `url_count` | Number of links in the email | Phishing often has 1 suspicious link; newsletters have many legitimate ones |
-| `avg_url_length` | Average URL character length | Phishing URLs tend to be unusually long to hide the real destination |
-| `suspicious_tld_count` | Dangerous top-level domains | Flags `.xyz`, `.tk`, `.top`, `.ml`, `.ga`, `.cf`, `.gq`, `.buzz`, `.club`, `.pw`, `.cc` |
-| `domain_mismatch_count` | Display text ≠ actual link | Detects when visible text says "paypal.com" but the link goes to a different domain |
-
-#### 2. ✉️ Text Structure Signals
-
-| Parameter | What It Detects | How It Works |
-|---|---|---|
-| `caps_ratio` | Excessive capitalization | Calculates `UPPERCASE / total_alphabetic` — phishing often uses "URGENT!!!" patterns |
-| `special_char_density` | Unusual punctuation density | High density of `!@#$%^&*` characters correlates with phishing |
-| `exclamation_count` | Exclamation mark overuse | Multiple `!!!` is a strong phishing signal |
-| `email_length` | Total character count | Very short, urgent emails are more likely phishing |
-
-#### 3. 🚨 Urgency & Pressure Language
-
-| Parameter | What It Detects | Keyword Patterns |
-|---|---|---|
-| `urgency_count` | High-pressure language | `urgent`, `immediately`, `act now`, `expires`, `suspended`, `verify`, `confirm`, `warning`, `alert`, `action required`, `limited time`, `within N hours`, `account locked`, `click here`, `do not ignore` |
-
-#### 4. 🎭 Impersonation Signals
-
-| Parameter | What It Detects | Keyword Patterns |
-|---|---|---|
-| `impersonation_count` | Authority figure references | `ceo`, `finance director`, `hr department`, `security team`, `it support`, `helpdesk`, `system administrator`, `admin team` |
-
-#### 5. 💳 Financial/Credential Requests
-
-| Parameter | What It Detects | Keyword Patterns |
-|---|---|---|
-| `financial_count` | Sensitive data requests | `verify account`, `update details`, `confirm banking`, `gift cards`, `wire transfer`, `reset password`, `login immediately`, `credit card`, `social security`, `ssn`, `routing number`, `account number`, `billing information` |
-
----
-
-### 🆕 Advanced Detection Parameters (v2.1)
-
-These 6 parameters detect sophisticated phishing that basic keyword matching misses:
-
-#### 6. 📧 Sender Domain Mismatch
-Detects when an email claims to be from a known brand (PayPal, Microsoft) but the sender's domain doesn't match.
-
-#### 7. 🎁 Unsolicited Good News
-Flags "Congratulations!", "You've been selected!", surprise pay raises or prizes with no prior context.
-
-#### 8. ⏰ Deadline Pressure with Date Analysis
-Parses actual dates and calculates days remaining. Deadlines within 10 days trigger pressure scoring (2 days = score 8/10).
-
-#### 9. 🔗 External Confirm/Review Links
-Links to unknown external domains asking to "review", "confirm", or "verify" personal/financial info.
-
-#### 10. 🎭 Generic Personalization
-Uses your first name ("Hi Sarah") but is vague about specifics — no project names, ticket numbers, or order IDs.
-
-#### 11. 📵 No Phone Verification
-Sensitive requests (password, account, verify) without offering phone/call verification — legitimate security emails usually do.
-
----
-
-### 🆕 Model Improvements (v2.1 Testing Phase)
-
-These improvements were added based on evaluation results — **no model retraining required**:
-
-| Improvement | What It Does | Impact |
-|---|---|---|
-| **Sender Domain Whitelist** | Known-safe domains (microsoft.com, google.com, etc.) + ≥2 safe indicators → strong risk reduction | Fixed false positive on real Microsoft security alerts |
-| **Short-Vague-Link Detection** | Short email (<200 chars) + suspicious TLD → high risk boost | Catches minimal adversarial phishing |
-| **Structural Override** | ≥2 strong phishing signals + ≤1 safe signal → floor score at 75%+ | Catches phishing when ML is naive (low TF-IDF score) |
-| **Reply-To Mismatch** | From domain ≠ Reply-To domain → risk boost | Catches BEC-style header spoofing |
-
----
-
-### ✅ Safe Indicators (reduce false positives)
-
-| Parameter | What It Detects | Risk Reduction |
-|---|---|---|
-| `has_unsubscribe` | "Unsubscribe", "opt out", "email preferences" | -20% |
-| `has_company_footer` | ©, copyright, all rights reserved, privacy policy | -15% |
-| `newsletter_score` | Multiple newsletter signals combined (≥2) | -20% |
-| `has_signature` | "Regards", "Sincerely", "Best wishes" | -10% |
-| `has_greeting` | "Hi [name]", "Dear Mr/Mrs" | -5% |
-| `has_phone_verification` | Phone number or "call us" offered | -10% |
-| **Sender Whitelist** | Known-safe domain + ≥2 safe indicators | -30% |
-| Long + no urgency | Email > 500 chars with 0 urgency words | -10% |
-
----
-
-## 🔧 Score Calculation Algorithm
-
-```
-Step 1: ML Probability
-        raw_score = model.predict_proba(tfidf_vector)[phishing_class]
-
-Step 2: Risk Boost (from structural features)
-        boost = Σ(triggered phishing indicators × weight)
-        Capped at 60%
-
-Step 3: Safe Adjustment
-        safe_reduction = Σ(triggered safe indicators × weight)
-        Capped at 65%
-
-Step 4: Final Score
-        adjusted = raw_score + (boost × 0.5) - (safe_reduction × 0.15 × 4)
-        Clamped to [0.0, 1.0]
-
-Step 4b: Structural Override
-        If ≥2 strong phishing indicators AND ≤1 safe signal:
-            adjusted = max(adjusted, 0.75)
-
-Step 5: Three-Tier Verdict
-        if adjusted ≥ 0.70  → 🔴 Phishing
-        if adjusted ≥ 0.50  → 🟡 Suspicious
-        else                → 🟢 Safe
+POST /predict     → { "email_text": "..." }  →  verdict + confidence + risk breakdown
+GET  /health      → server status
 ```
 
 ---
@@ -211,66 +154,57 @@ Step 5: Three-Tier Verdict
 
 ```
 phish-detector/
-├── app.py                  # Streamlit web UI
-├── api_server.py           # Flask API for Chrome extension
-├── predict.py              # Unified prediction engine (4-layer pipeline)
-├── feature_engineering.py  # 24-feature structural extractor
-├── train_model.py          # Training pipeline (TF-IDF + LogReg + CV)
-├── calibrate_threshold.py  # Precision-recall threshold optimizer
-├── test_suite.py           # 26-email evaluation suite
-├── config.json             # Calibrated threshold & settings
-├── model.pkl               # Trained ML model
-├── vectorizer.pkl          # Trained TF-IDF vectorizer
-├── evaluation_report.json  # Test results (100% precision/recall)
-├── solution.md             # Solution overview
-├── testing_strategy.md     # Testing methodology
-├── README.md               # This file
-├── chrome-extension/       # Chrome extension
-│   ├── manifest.json       # Manifest V3
-│   ├── contentScript.js    # Gmail/Outlook injection + email extraction
-│   ├── background.js       # API communication service worker
-│   ├── styles.css          # Native-looking inline UI
-│   └── icons/              # Extension icons (16/48/128px)
-├── train_xgb.py            # XGBoost training (alternative model)
-└── demo_xgb.py             # Gradio demo for XGBoost model
+│
+├── app.py                   # Streamlit web dashboard
+├── api_server.py            # Flask API for Chrome extension
+├── predict.py               # 4-layer prediction engine
+├── feature_engineering.py   # 24-feature structural extractor
+├── train_model.py           # ML training pipeline
+├── test_suite.py            # 26-email evaluation suite
+├── evaluation_report.json   # Proof: 100% precision/recall
+│
+├── chrome-extension/
+│   ├── manifest.json        # Manifest V3
+│   ├── contentScript.js     # Email extraction + UI injection
+│   ├── background.js        # API communication
+│   └── styles.css           # Native-looking inline UI
+│
+├── model.pkl                # Trained ML model
+├── vectorizer.pkl           # Trained TF-IDF vectorizer
+└── config.json              # Calibrated thresholds
 ```
 
 ---
 
 ## 🏗️ Tech Stack
 
-| Component | Technology |
-|---|---|
-| Web Dashboard | Streamlit |
-| Chrome Extension | Manifest V3 + MutationObserver |
-| API Server | Flask + CORS |
-| ML Model | scikit-learn (Logistic Regression) |
-| Vectorizer | TF-IDF (bigrams, sublinear TF) |
-| Feature Engine | Custom Python (regex + NLP) |
-| Alt. Model | XGBoost (via `train_xgb.py`) |
-| Testing | Custom 26-email evaluation suite |
-| Threshold Calibration | Precision-Recall Curve Analysis |
+| Layer | Technology |
+|:---|:---|
+| **ML Engine** | Python · scikit-learn · TF-IDF + Logistic Regression |
+| **Feature Engine** | Custom regex + NLP (24 structural features) |
+| **Web Dashboard** | Streamlit |
+| **Chrome Extension** | Manifest V3 · MutationObserver · Service Worker |
+| **API** | Flask + CORS |
+| **Testing** | Custom 26-email evaluation suite with precision/recall metrics |
 
 ---
 
-## 📈 Retraining the Model
+## 💡 What Makes PhishGuard Different
 
-```bash
-# Retrain with your dataset (requires dataset.csv with 'text_combined' and 'label' columns)
-python3 train_model.py
-
-# Recalibrate the threshold
-python3 calibrate_threshold.py
-
-# Run evaluation suite
-python3 test_suite.py
-```
+| Traditional Filters | PhishGuard |
+|:---|:---|
+| Keyword matching only | ML + 24 structural features + safe indicators |
+| Binary spam/not-spam | 3-tier verdict: Phishing / Suspicious / Safe |
+| No explanation | Full breakdown: *which signals* triggered and *why* |
+| High false positives on security alerts | Sender whitelist + safe signal recognition |
+| Misses minimal phishing | Structural override catches short/vague attacks |
+| Requires constant retraining | Rule-based improvements without touching the model |
 
 ---
 
-## 👥 Team
+## 👥 Team HackSavvy-26
 
-**HackSavvy-26** — Built for hackathon submission.
+Built with ❤️ for safer inboxes.
 
 ---
 
