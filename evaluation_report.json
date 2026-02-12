@@ -1,0 +1,228 @@
+{
+  "total_tests": 26,
+  "metrics": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "fpr": 0.0,
+    "accuracy": 1.0,
+    "explainability": 1.0
+  },
+  "confusion_matrix": {
+    "tp": 13,
+    "fp": 0,
+    "tn": 13,
+    "fn": 0
+  },
+  "failures": [],
+  "results": [
+    {
+      "id": "A1",
+      "category": "A: Phishing",
+      "name": "PayPal credential harvesting",
+      "correct": true,
+      "verdict": "Phishing \ud83d\udd34",
+      "score": 100.0
+    },
+    {
+      "id": "A2",
+      "category": "A: Phishing",
+      "name": "BEC wire transfer",
+      "correct": true,
+      "verdict": "Phishing \ud83d\udd34",
+      "score": 89.82
+    },
+    {
+      "id": "A3",
+      "category": "A: Phishing",
+      "name": "Prize/lottery scam",
+      "correct": true,
+      "verdict": "Phishing \ud83d\udd34",
+      "score": 100.0
+    },
+    {
+      "id": "A4",
+      "category": "A: Phishing",
+      "name": "HR impersonation salary scam",
+      "correct": true,
+      "verdict": "Phishing \ud83d\udd34",
+      "score": 96.85
+    },
+    {
+      "id": "A5",
+      "category": "A: Phishing",
+      "name": "Microsoft account phishing",
+      "correct": true,
+      "verdict": "Phishing \ud83d\udd34",
+      "score": 100.0
+    },
+    {
+      "id": "A6",
+      "category": "A: Phishing",
+      "name": "Invoice payment fraud",
+      "correct": true,
+      "verdict": "Phishing \ud83d\udd34",
+      "score": 88.45
+    },
+    {
+      "id": "A7",
+      "category": "A: Phishing",
+      "name": "Netflix account suspension",
+      "correct": true,
+      "verdict": "Phishing \ud83d\udd34",
+      "score": 100.0
+    },
+    {
+      "id": "A8",
+      "category": "A: Phishing",
+      "name": "Amazon order confirmation scam",
+      "correct": true,
+      "verdict": "Phishing \ud83d\udd34",
+      "score": 100.0
+    },
+    {
+      "id": "B1",
+      "category": "B: Legit Security",
+      "name": "Real Google password reset",
+      "correct": true,
+      "verdict": "Safe \ud83d\udfe2",
+      "score": 0.0
+    },
+    {
+      "id": "B2",
+      "category": "B: Legit Security",
+      "name": "Real bank login alert",
+      "correct": true,
+      "verdict": "Safe \ud83d\udfe2",
+      "score": 17.33
+    },
+    {
+      "id": "B3",
+      "category": "B: Legit Security",
+      "name": "Real 2FA code",
+      "correct": true,
+      "verdict": "Safe \ud83d\udfe2",
+      "score": 0.0
+    },
+    {
+      "id": "B4",
+      "category": "B: Legit Security",
+      "name": "Real Microsoft security alert",
+      "correct": true,
+      "verdict": "Suspicious \ud83d\udfe1",
+      "score": 53.51
+    },
+    {
+      "id": "B5",
+      "category": "B: Legit Security",
+      "name": "Real Slack workspace invite",
+      "correct": true,
+      "verdict": "Safe \ud83d\udfe2",
+      "score": 0.0
+    },
+    {
+      "id": "C1",
+      "category": "C: Normal Business",
+      "name": "Newsletter",
+      "correct": true,
+      "verdict": "Safe \ud83d\udfe2",
+      "score": 0.0
+    },
+    {
+      "id": "C2",
+      "category": "C: Normal Business",
+      "name": "Meeting invite",
+      "correct": true,
+      "verdict": "Safe \ud83d\udfe2",
+      "score": 15.35
+    },
+    {
+      "id": "C3",
+      "category": "C: Normal Business",
+      "name": "Project update",
+      "correct": true,
+      "verdict": "Safe \ud83d\udfe2",
+      "score": 4.5
+    },
+    {
+      "id": "C4",
+      "category": "C: Normal Business",
+      "name": "Personal email",
+      "correct": true,
+      "verdict": "Safe \ud83d\udfe2",
+      "score": 41.77
+    },
+    {
+      "id": "C5",
+      "category": "C: Normal Business",
+      "name": "E-commerce order confirmation",
+      "correct": true,
+      "verdict": "Safe \ud83d\udfe2",
+      "score": 0.0
+    },
+    {
+      "id": "D1",
+      "category": "D: Edge Case",
+      "name": "Subtle phishing \u2014 no urgency",
+      "correct": true,
+      "verdict": "Phishing \ud83d\udd34",
+      "score": 100.0
+    },
+    {
+      "id": "D2",
+      "category": "D: Edge Case",
+      "name": "Legitimate email with urgency",
+      "correct": true,
+      "verdict": "Safe \ud83d\udfe2",
+      "score": 26.68
+    },
+    {
+      "id": "D3",
+      "category": "D: Edge Case",
+      "name": "Marketing with deadline",
+      "correct": true,
+      "verdict": "Safe \ud83d\udfe2",
+      "score": 18.28
+    },
+    {
+      "id": "D4",
+      "category": "D: Edge Case",
+      "name": "Internal verify request",
+      "correct": true,
+      "verdict": "Safe \ud83d\udfe2",
+      "score": 15.02
+    },
+    {
+      "id": "D5",
+      "category": "D: Edge Case",
+      "name": "Phishing disguised as IT admin",
+      "correct": true,
+      "verdict": "Phishing \ud83d\udd34",
+      "score": 100.0
+    },
+    {
+      "id": "E1",
+      "category": "E: Adversarial",
+      "name": "Obfuscated brand name",
+      "correct": true,
+      "verdict": "Phishing \ud83d\udd34",
+      "score": 100.0
+    },
+    {
+      "id": "E2",
+      "category": "E: Adversarial",
+      "name": "Short vague phishing",
+      "correct": true,
+      "verdict": "Phishing \ud83d\udd34",
+      "score": 75.0
+    },
+    {
+      "id": "E3",
+      "category": "E: Adversarial",
+      "name": "Polite professional phishing",
+      "correct": true,
+      "verdict": "Phishing \ud83d\udd34",
+      "score": 79.83
+    }
+  ]
+}

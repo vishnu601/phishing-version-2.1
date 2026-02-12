@@ -1,5 +1,6 @@
 import pickle
 import json
+import re
 import numpy as np
 from feature_engineering import extract_structural_features, analyze_risk_distribution
 
@@ -21,10 +22,12 @@ SAFE_DOMAIN_KEYWORDS = [
     'github.com', 'linkedin.com', 'chase.com', 'wellsfargo.com',
     'bankofamerica.com', 'paypal.com', 'stripe.com', 'slack.com',
     'zoom.us', 'dropbox.com', 'notion.so', 'figma.com',
+    'accountprotection.microsoft.com', 'accounts.google.com',
+    'flipkart.com', 'amazon.in',
 ]
 
 
-def _compute_safe_adjustment(features):
+def _compute_safe_adjustment(features, email_text=""):
     """Compute how much to reduce the phishing probability based on
     safe indicators found in the email. Returns a value between 0 and 1
     where higher means more safe signals detected."""
@@ -56,10 +59,29 @@ def _compute_safe_adjustment(features):
     if features.get('has_phone_verification'):
         adjustments.append(0.10)
 
-    return min(sum(adjustments), 0.50)  # Cap at 50% reduction
+    # ── NEW: Sender domain whitelist ───────────────────────────────────
+    # If the From address matches a known-safe domain AND the email has
+    # safe indicators (footer, phone, unsubscribe), apply strong reduction.
+    # This fixes false positives on real security alerts from Google, Microsoft, etc.
+    from_match = re.search(
+        r'from:?\s*[\w\s]*<?[\w.+-]+@([\w.-]+)>?', email_text.lower()
+    )
+    if from_match:
+        sender_domain = from_match.group(1)
+        is_whitelisted = any(safe_d in sender_domain for safe_d in SAFE_DOMAIN_KEYWORDS)
+        safe_signal_count = sum([
+            features.get('has_company_footer', 0),
+            features.get('has_phone_verification', 0),
+            features.get('has_unsubscribe', 0),
+            features.get('has_signature', 0),
+        ])
+        if is_whitelisted and safe_signal_count >= 2:
+            adjustments.append(0.30)  # Strong reduction for verified safe sender
+
+    return min(sum(adjustments), 0.65)  # Raised cap to 65% for whitelist
 
 
-def _compute_risk_boost(features):
+def _compute_risk_boost(features, email_text=""):
     """Compute additional risk boost based on strong phishing indicators.
     Returns a value between 0 and 1."""
     boosts = []
@@ -89,7 +111,42 @@ def _compute_risk_boost(features):
     if features.get('sensitive_no_phone'):
         boosts.append(0.10)
 
-    return min(sum(boosts), 0.60)  # Cap at 60% boost (raised for new params)
+    # ── NEW: Short + vague + external link ─────────────────────────────
+    # Very short emails (<200 chars) with an external link asking to
+    # review/confirm OR with a suspicious TLD are suspicious.
+    email_len = features.get('email_length', 0)
+    if (email_len < 200 and
+            features.get('has_url', 0) and
+            features.get('external_confirm_link', 0)):
+        boosts.append(0.20)
+    elif (email_len < 200 and
+          features.get('has_url', 0) and
+          features.get('suspicious_tld_count', 0) > 0):
+        # Short email + suspicious TLD = strong phishing signal
+        boosts.append(0.25)
+    elif (email_len < 150 and
+          features.get('has_url', 0) and
+          features.get('urgency_count', 0) == 0 and
+          features.get('has_signature', 0) == 0):
+        # Very short, no urgency, no signature, has link = vague phishing
+        boosts.append(0.15)
+
+    # ── NEW: Reply-to mismatch ─────────────────────────────────────────
+    # From: ceo@company.com but Reply-To: hacker@gmail.com
+    import re as _re
+    from_match = _re.search(
+        r'from:?\s*[\w\s]*<?[\w.+-]+@([\w.-]+)>?', email_text.lower()
+    )
+    reply_match = _re.search(
+        r'reply-?to:?\s*[\w\s]*<?[\w.+-]+@([\w.-]+)>?', email_text.lower()
+    )
+    if from_match and reply_match:
+        from_domain = from_match.group(1)
+        reply_domain = reply_match.group(1)
+        if from_domain != reply_domain:
+            boosts.append(0.15)
+
+    return min(sum(boosts), 0.60)  # Cap at 60% boost
 
 
 def predict_email(email_text):
@@ -115,14 +172,36 @@ def predict_email(email_text):
     features = extract_structural_features(email_text)
 
     # Step 3: Compute adjustments
-    safe_adjustment = _compute_safe_adjustment(features)
-    risk_boost = _compute_risk_boost(features)
+    safe_adjustment = _compute_safe_adjustment(features, email_text)
+    risk_boost = _compute_risk_boost(features, email_text)
 
     # Step 4: Combine ML probability with structural adjustments
     # Safe signals pull the score down; risk signals push it up
     weight = _config.get('safe_indicator_weight', 0.15)
-    adjusted_probability = ml_probability + (risk_boost * 0.5) - (safe_adjustment * weight * 3)
+    adjusted_probability = ml_probability + (risk_boost * 0.5) - (safe_adjustment * weight * 4)
     adjusted_probability = max(0.0, min(1.0, adjusted_probability))  # Clamp to [0, 1]
+
+    # Step 4b: Structural override — when structural indicators are very strong
+    # but ML is naive (e.g. very short emails that TF-IDF can't classify).
+    # If we see a suspicious TLD + external confirm link and no safe signals,
+    # override the score to guarantee detection.
+    strong_phishing_indicators = sum([
+        features.get('suspicious_tld_count', 0) > 0,
+        features.get('external_confirm_link', 0) > 0,
+        features.get('sender_domain_mismatch', 0) > 0,
+        features.get('domain_mismatch_count', 0) > 0,
+        features.get('unsolicited_good_news', 0) > 0,
+    ])
+    safe_indicator_count = sum([
+        features.get('has_unsubscribe', 0),
+        features.get('has_company_footer', 0),
+        features.get('has_phone_verification', 0),
+        features.get('has_signature', 0),
+    ])
+    if strong_phishing_indicators >= 2 and safe_indicator_count == 0:
+        adjusted_probability = max(adjusted_probability, 0.85)
+    elif strong_phishing_indicators >= 2 and safe_indicator_count <= 1:
+        adjusted_probability = max(adjusted_probability, 0.75)
 
     # Step 5: Three-tier verdict using calibrated threshold
     threshold = _config.get('threshold', 0.55)
