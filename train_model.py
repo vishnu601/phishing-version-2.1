@@ -27,6 +27,42 @@ from scipy.sparse import hstack, csr_matrix
 
 from feature_engineering import extract_structural_features
 
+
+def _generate_fallback_dataset():
+    """Generate a small synthetic dataset for when dataset.csv is missing."""
+    phishing_samples = [
+        "URGENT: Your account has been suspended. Click here to verify now!",
+        "Dear user, your password expires in 24 hours. Reset immediately at http://secure-login.tk/reset",
+        "IT Support: Your mailbox is full. Click http://mail-upgrade.ml to fix. Act now!",
+        "Your Apple ID has been locked. Verify account at http://apple-verify.xyz/unlock",
+        "ALERT!! Credit card charged $499.99. Claim refund at http://secure-refund.ga/claim",
+        "CEO here. Purchase gift cards urgently. Wire transfer $500 immediately.",
+        "Confirm your social security number to receive your tax refund.",
+        "We detected unauthorized access to your account. Confirm banking details now.",
+        "Your PayPal account has been limited. Verify your identity: http://paypa1.tk/verify",
+        "Action required: Update your billing information within 24 hours or lose access.",
+        # Sophisticated social-engineering: corporate policy conditioning
+        "Subject: Updated internal usage guidelines\nFrom: policy@infraloom.co\nHi,\nAs part of our quarterly review, we've updated sections of the internal usage guidelines to better reflect current operational practices.\nNo immediate changes are required from your side. Acknowledgment may be requested during the next compliance cycle.\nThanks for your continued cooperation.\n—Operations Policy Team",
+    ]
+    safe_samples = [
+        "Hi team, here's the Q4 financial report. Best regards, John",
+        "Meeting reminder: Project sync at 3pm tomorrow. Regards, Sarah",
+        "Hi Mark, following up on our marketing budget conversation. Cheers!",
+        "Your Amazon order has shipped! Track at amazon.com. © 2025 Amazon.com, Inc.",
+        "Weekly Newsletter: Top 10 tech trends. Unsubscribe: newsletter.com/unsub",
+        "Dear Professor, I'd like to discuss my thesis. Best, Alex",
+        "Invitation: Annual company picnic June 15th. © Company Inc. All rights reserved.",
+        "Your Uber receipt: $12.50. View at uber.com/receipts. Thanks for riding!",
+        "Good morning team, please review the updated security policy. Best regards, IT",
+        "Your dentist appointment is tomorrow at 2pm. Call 555-1234 to reschedule.",
+    ]
+
+    texts = phishing_samples + safe_samples
+    labels = [1] * len(phishing_samples) + [0] * len(safe_samples)
+
+    return pd.DataFrame({'text_combined': texts, 'label': labels})
+
+
 # ── Load dataset ────────────────────────────────────────────────────────
 print("🔄 Loading dataset...")
 
@@ -160,34 +196,3 @@ print(f"✅ Config saved: config.json (threshold={config['threshold']})")
 print(f"✅ Training complete!")
 
 
-def _generate_fallback_dataset():
-    """Generate a small synthetic dataset for when dataset.csv is missing."""
-    phishing_samples = [
-        "URGENT: Your account has been suspended. Click here to verify now!",
-        "Dear user, your password expires in 24 hours. Reset immediately at http://secure-login.tk/reset",
-        "IT Support: Your mailbox is full. Click http://mail-upgrade.ml to fix. Act now!",
-        "Your Apple ID has been locked. Verify account at http://apple-verify.xyz/unlock",
-        "ALERT!! Credit card charged $499.99. Claim refund at http://secure-refund.ga/claim",
-        "CEO here. Purchase gift cards urgently. Wire transfer $500 immediately.",
-        "Confirm your social security number to receive your tax refund.",
-        "We detected unauthorized access to your account. Confirm banking details now.",
-        "Your PayPal account has been limited. Verify your identity: http://paypa1.tk/verify",
-        "Action required: Update your billing information within 24 hours or lose access.",
-    ]
-    safe_samples = [
-        "Hi team, here's the Q4 financial report. Best regards, John",
-        "Meeting reminder: Project sync at 3pm tomorrow. Regards, Sarah",
-        "Hi Mark, following up on our marketing budget conversation. Cheers!",
-        "Your Amazon order has shipped! Track at amazon.com. © 2025 Amazon.com, Inc.",
-        "Weekly Newsletter: Top 10 tech trends. Unsubscribe: newsletter.com/unsub",
-        "Dear Professor, I'd like to discuss my thesis. Best, Alex",
-        "Invitation: Annual company picnic June 15th. © Company Inc. All rights reserved.",
-        "Your Uber receipt: $12.50. View at uber.com/receipts. Thanks for riding!",
-        "Good morning team, please review the updated security policy. Best regards, IT",
-        "Your dentist appointment is tomorrow at 2pm. Call 555-1234 to reschedule.",
-    ]
-
-    texts = phishing_samples + safe_samples
-    labels = [1] * len(phishing_samples) + [0] * len(safe_samples)
-
-    return pd.DataFrame({'text_combined': texts, 'label': labels})

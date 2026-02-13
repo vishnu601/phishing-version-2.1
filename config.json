@@ -1,9 +1,35 @@
 {
-    "threshold": 0.7,
+    "threshold": 0.5,
     "suspicious_range": [
-        0.5,
-        0.7
+        0.3,
+        0.5
     ],
     "safe_indicator_weight": 0.15,
-    "version": "2.0"
+    "version": "2.0",
+    "structural_feature_names": [
+        "url_count",
+        "has_url",
+        "avg_url_length",
+        "suspicious_tld_count",
+        "domain_mismatch_count",
+        "caps_ratio",
+        "special_char_density",
+        "email_length",
+        "exclamation_count",
+        "urgency_count",
+        "impersonation_count",
+        "financial_count",
+        "has_greeting",
+        "has_unsubscribe",
+        "has_signature",
+        "has_company_footer",
+        "newsletter_score",
+        "sender_domain_mismatch",
+        "unsolicited_good_news",
+        "deadline_pressure",
+        "external_confirm_link",
+        "generic_personalization",
+        "has_phone_verification",
+        "sensitive_no_phone"
+    ]
 }
