@@ -43,6 +43,8 @@ def _generate_fallback_dataset():
         "Action required: Update your billing information within 24 hours or lose access.",
         # Sophisticated social-engineering: corporate policy conditioning
         "Subject: Updated internal usage guidelines\nFrom: policy@infraloom.co\nHi,\nAs part of our quarterly review, we've updated sections of the internal usage guidelines to better reflect current operational practices.\nNo immediate changes are required from your side. Acknowledgment may be requested during the next compliance cycle.\nThanks for your continued cooperation.\n—Operations Policy Team",
+        # Payment batching scam: primes victim for invoice redirection
+        "Subject: FYI – payment batching window adjustment\nFrom: accounts@northbay-consult.co\nHi,\nJust a heads-up that the payment batching window was adjusted this week due to volume normalization.\nThis shouldn't affect standard processing, but some confirmations may appear delayed.\nFlagging in case you notice timing differences.\nBest,\nAccounts Desk",
     ]
     safe_samples = [
         "Hi team, here's the Q4 financial report. Best regards, John",
@@ -81,54 +83,44 @@ if data['label'].dtype == 'object':
 
 print(f"📊 Dataset: {len(data)} emails | {data['label'].mean():.1%} phishing")
 
-# ── Extract structural features ─────────────────────────────────────────
-print("🔧 Extracting structural features...")
-structural_features = []
-feature_names = None
-
-for idx, row in data.iterrows():
-    feats = extract_structural_features(str(row[text_col]))
-    structural_features.append(feats)
-    if feature_names is None:
-        feature_names = list(feats.keys())
-
-structural_df = pd.DataFrame(structural_features)
-print(f"   → {len(feature_names)} structural features: {feature_names}")
+# ── Extract structural feature names (for config) ──────────────────────
+print("🔧 Extracting structural feature names...")
+sample_feats = extract_structural_features(str(data[text_col].iloc[0]))
+feature_names = list(sample_feats.keys())
+print(f"   → {len(feature_names)} structural features registered")
+print(f"   Note: Structural features are applied at prediction time via")
+print(f"         risk_boost/safe_adjustment — model trains on TF-IDF only.")
 
 # ── Split data ──────────────────────────────────────────────────────────
 X_text = data[text_col]
 y = data['label']
 
-X_train_text, X_test_text, y_train, y_test, train_idx, test_idx = train_test_split(
-    X_text, y, range(len(data)),
+X_train_text, X_test_text, y_train, y_test = train_test_split(
+    X_text, y,
     test_size=0.2, random_state=42, stratify=y
 )
 
 # ── TF-IDF vectorization (upgraded) ─────────────────────────────────────
 print("📝 Vectorizing with TF-IDF (bigrams, sublinear TF)...")
+
+# Use min_df=1 for small datasets, min_df=2 for large ones
+_min_df = 1 if len(data) < 100 else 2
+
 vectorizer = TfidfVectorizer(
     stop_words='english',
     max_features=7000,
     ngram_range=(1, 2),      # Unigrams + bigrams
     sublinear_tf=True,       # Apply log normalization
-    min_df=2,                # Ignore very rare terms
+    min_df=_min_df,          # Adaptive: 1 for small, 2 for large datasets
     max_df=0.95,             # Ignore terms in >95% of docs
 )
 
 X_train_tfidf = vectorizer.fit_transform(X_train_text)
 X_test_tfidf = vectorizer.transform(X_test_text)
 
-# ── Combine TF-IDF + structural features ────────────────────────────────
-train_structural = csr_matrix(structural_df.iloc[list(train_idx)].values)
-test_structural = csr_matrix(structural_df.iloc[list(test_idx)].values)
+print(f"   → TF-IDF feature matrix: {X_train_tfidf.shape[1]} features (min_df={_min_df})")
 
-X_train_combined = hstack([X_train_tfidf, train_structural])
-X_test_combined = hstack([X_test_tfidf, test_structural])
-
-print(f"   → Combined feature matrix: {X_train_combined.shape[1]} features "
-      f"({X_train_tfidf.shape[1]} TF-IDF + {train_structural.shape[1]} structural)")
-
-# ── Train model (upgraded) ──────────────────────────────────────────────
+# ── Train model (TF-IDF only — structural features applied at predict time) ─
 print("🧠 Training Logistic Regression (balanced, C=0.5)...")
 model = LogisticRegression(
     max_iter=2000,
@@ -136,19 +128,23 @@ model = LogisticRegression(
     C=0.5,                    # Stronger regularization
     random_state=42,
 )
-model.fit(X_train_combined, y_train)
+model.fit(X_train_tfidf, y_train)
 
 # ── Cross-validation ────────────────────────────────────────────────────
 print("\n📊 Cross-validation (5-fold stratified)...")
-cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
-cv_scores = cross_val_score(model, X_train_combined, y_train, cv=cv, scoring='f1')
-print(f"   CV F1 scores: {[f'{s:.3f}' for s in cv_scores]}")
-print(f"   Mean CV F1: {cv_scores.mean():.3f} ± {cv_scores.std():.3f}")
+_n_splits = min(5, min(sum(y_train == 0), sum(y_train == 1)))
+if _n_splits >= 2:
+    cv = StratifiedKFold(n_splits=_n_splits, shuffle=True, random_state=42)
+    cv_scores = cross_val_score(model, X_train_tfidf, y_train, cv=cv, scoring='f1')
+    print(f"   CV F1 scores: {[f'{s:.3f}' for s in cv_scores]}")
+    print(f"   Mean CV F1: {cv_scores.mean():.3f} ± {cv_scores.std():.3f}")
+else:
+    print(f"   Skipping CV — too few samples per class ({_n_splits} folds possible)")
 
 # ── Evaluate on test set ────────────────────────────────────────────────
 print("\n🎯 Test Set Evaluation:")
-predictions = model.predict(X_test_combined)
-probabilities = model.predict_proba(X_test_combined)[:, 1]
+predictions = model.predict(X_test_tfidf)
+probabilities = model.predict_proba(X_test_tfidf)[:, 1]
 accuracy = accuracy_score(y_test, predictions)
 
 print(f"\n   Accuracy: {accuracy:.2%}")
