@@ -146,6 +146,13 @@ def _compute_risk_boost(features, email_text=""):
         if from_domain != reply_domain:
             boosts.append(0.15)
 
+    # ── Social engineering / compliance conditioning ────────────────────
+    se_score = features.get('social_engineering_score', 0)
+    if se_score >= 30:
+        boosts.append(0.20)  # Strong social engineering signals
+    elif se_score >= 15:
+        boosts.append(0.10)  # Moderate social engineering signals
+
     return min(sum(boosts), 0.60)  # Cap at 60% boost
 
 
@@ -245,6 +252,21 @@ def predict_email(email_text):
         warning_reasons.append("⚠️ Generic personalization — uses first name but vague on specifics")
     if features.get('sensitive_no_phone'):
         warning_reasons.append("⚠️ Sensitive request with no phone verification offered")
+
+    # Social engineering warnings
+    se_score = features.get('social_engineering_score', 0)
+    se_reasons = features.get('social_engineering_reasons', [])
+    if se_score > 0 and se_reasons:
+        warning_reasons.append(
+            f"⚠️ Social engineering patterns: {'; '.join(se_reasons)}"
+        )
+
+    # ML-only detection explanation: when ML flags phishing but no structural warnings fired
+    if ml_probability > 0.4 and not warning_reasons:
+        warning_reasons.append(
+            f"⚠️ ML text analysis detected phishing patterns (confidence: {ml_probability:.0%}) — "
+            f"email wording and structure match known phishing campaigns"
+        )
 
     # Step 7: Risk breakdown for UI
     risk_data = analyze_risk_distribution(email_text, ml_confidence=ml_probability)

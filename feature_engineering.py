@@ -232,6 +232,82 @@ def extract_structural_features(text):
     if has_sensitive_request and not has_phone_verification:
         sensitive_no_phone = 1
 
+    # --- NEW PARAM 7: Social engineering / compliance conditioning ---
+    # Detects subtle trust-building emails that prime the victim for later attacks:
+    #   - Vague policy/procedure references from unknown senders
+    #   - Requests future acknowledgment or compliance
+    #   - Payment/billing language from external domains
+    #   - Authority grooming (operations team, accounts dept, etc.)
+    social_engineering_score = 0
+    se_reasons = []
+
+    # Compliance conditioning: asks for future acknowledgment/compliance
+    compliance_patterns = [
+        r'acknowledgment\s+(?:may|will|could)\s+be\s+requested',
+        r'may\s+be\s+requested\s+during',
+        r'compliance\s+cycle',
+        r'action\s+(?:may|will|could)\s+be\s+(?:needed|required)',
+        r'continued\s+cooperation',
+        r'further\s+(?:action|steps|instructions)\s+(?:may|will)',
+        r'will\s+(?:follow\s+up|reach\s+out|contact\s+you)',
+    ]
+    compliance_hits = sum(1 for p in compliance_patterns if re.search(p, text_lower))
+    if compliance_hits > 0:
+        social_engineering_score += min(compliance_hits * 15, 30)
+        se_reasons.append(f"{compliance_hits} compliance conditioning pattern(s)")
+
+    # Vague authority: references to policy/operations teams without specifics
+    authority_patterns = [
+        r'operations\s+(?:policy|team|desk|department)',
+        r'accounts?\s+(?:desk|team|department)',
+        r'policy\s+(?:team|update|review|change)',
+        r'internal\s+(?:usage|policy|guideline|procedure)',
+        r'quarterly\s+review',
+        r'usage\s+guidelines?',
+        r'operational\s+practices',
+        r'volume\s+normalization',
+        r'payment\s+batching',
+        r'standard\s+processing',
+    ]
+    authority_hits = sum(1 for p in authority_patterns if re.search(p, text_lower))
+    if authority_hits >= 2:
+        social_engineering_score += min(authority_hits * 10, 30)
+        se_reasons.append(f"{authority_hits} vague authority/policy reference(s)")
+
+    # Unknown sender domain with corporate-sounding name
+    # (Not from a known brand/company domain, but uses official-sounding language)
+    is_unknown_sender = False
+    if sender_match:
+        s_domain = sender_match.group(1)
+        known_domains = [
+            'google.com', 'microsoft.com', 'apple.com', 'amazon.com',
+            'github.com', 'linkedin.com', 'slack.com', 'zoom.us',
+            'gmail.com', 'outlook.com', 'yahoo.com', 'hotmail.com',
+        ]
+        is_unknown_sender = not any(kd in s_domain for kd in known_domains)
+    if is_unknown_sender and authority_hits >= 1:
+        social_engineering_score += 15
+        se_reasons.append("unknown sender domain with corporate-sounding language")
+
+    # Payment/billing/financial language from external source (without URLs)
+    payment_grooming = [
+        r'payment\b', r'\binvoice\b', r'\bbilling\b', r'\bbatching\b',
+        r'\bremittance\b', r'\btransfer\b', r'\bconfirmation.{0,20}delayed\b',
+        r'\btiming\s+differences?\b',
+    ]
+    payment_hits = sum(1 for p in payment_grooming if re.search(p, text_lower))
+    if payment_hits >= 2 and is_unknown_sender:
+        social_engineering_score += min(payment_hits * 10, 25)
+        se_reasons.append(f"{payment_hits} payment/billing term(s) from unknown sender")
+
+    # No links + no ask + corporate tone = trust priming (only suspicious from unknown sender)
+    if (is_unknown_sender and has_url == 0 and urgency_count == 0
+            and financial_count == 0 and (compliance_hits > 0 or authority_hits >= 2)):
+        social_engineering_score += 10
+        se_reasons.append("no links or asks — possible trust priming for follow-up attack")
+
+    social_engineering_score = min(social_engineering_score, 50)  # Cap at 50
+
     # --- Safe-pattern indicators (reduce false positives) ---
     greeting_patterns = [
         r'\b(hi|hello|hey|dear|good morning|good afternoon)\s+\w+',
@@ -285,6 +361,9 @@ def extract_structural_features(text):
         'generic_personalization': generic_personalization,
         'has_phone_verification': has_phone_verification,
         'sensitive_no_phone': sensitive_no_phone,
+        # --- New v2.2: Social engineering ---
+        'social_engineering_score': social_engineering_score,
+        'social_engineering_reasons': se_reasons,
     }
 
 
@@ -304,6 +383,8 @@ def analyze_risk_distribution(text, ml_confidence=None):
         "External Confirm/Review Link": {"score": 0, "reason": ""},
         "Generic Personalization": {"score": 0, "reason": ""},
         "No Phone Verification": {"score": 0, "reason": ""},
+        "Social Engineering": {"score": 0, "reason": ""},
+        "ML Text Analysis": {"score": 0, "reason": ""},
         "Safe Indicators": {"score": 0, "reason": ""},
     }
 
@@ -427,6 +508,43 @@ def analyze_risk_distribution(text, ml_confidence=None):
         risk_data["Safe Indicators"]["reason"] = (
             f"Legitimate signals detected: {', '.join(safe_parts)}."
         )
+
+    # --- Social Engineering ---
+    se_score = features.get('social_engineering_score', 0)
+    se_reasons = features.get('social_engineering_reasons', [])
+    if se_score > 0:
+        risk_data["Social Engineering"]["score"] = min(se_score, 50)
+        risk_data["Social Engineering"]["reason"] = (
+            f"Detected: {'; '.join(se_reasons)}."
+        )
+
+    # --- ML Text Analysis ---
+    # When the ML model detects phishing patterns but no structural
+    # indicators fire, show the ML contribution so the user understands
+    # where the risk score comes from.
+    if ml_confidence is not None and ml_confidence > 0.4:
+        structural_risk_total = sum(
+            v["score"] for k, v in risk_data.items()
+            if k not in ("Safe Indicators", "ML Text Analysis")
+        )
+        # Show ML contribution proportional to its confidence
+        ml_risk_score = int(ml_confidence * 50)  # Scale 0-50
+        if structural_risk_total == 0:
+            # ML is the only signal — make it prominent
+            ml_risk_score = max(ml_risk_score, 30)
+            risk_data["ML Text Analysis"]["score"] = ml_risk_score
+            risk_data["ML Text Analysis"]["reason"] = (
+                f"ML model detected text patterns similar to known phishing emails "
+                f"(confidence: {ml_confidence:.0%}). This email's wording, tone, and "
+                f"structure match patterns seen in phishing campaigns."
+            )
+        elif structural_risk_total < 20:
+            # Some structural signals but ML is a significant contributor
+            risk_data["ML Text Analysis"]["score"] = ml_risk_score
+            risk_data["ML Text Analysis"]["reason"] = (
+                f"ML model flagged text patterns associated with phishing "
+                f"(confidence: {ml_confidence:.0%}), reinforcing structural signals."
+            )
 
     # --- Normalize risk scores to percentages (exclude safe indicators) ---
     risk_categories = {k: v for k, v in risk_data.items() if k != "Safe Indicators"}
