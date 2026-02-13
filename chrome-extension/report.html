@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhishGuard — Security Report</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="report.css">
+</head>
+<body>
+  <!-- ─── Hero Header ──────────────────────────────────────────────── -->
+  <header class="report-header" id="report-header">
+    <div class="header-brand">
+      <svg class="header-shield" width="36" height="36" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+      <div>
+        <h1>PhishGuard</h1>
+        <span class="header-sub">AI-Powered Email Security Report</span>
+      </div>
+    </div>
+    <div class="header-badge" id="header-badge">—</div>
+  </header>
+
+  <!-- ─── Score Overview ───────────────────────────────────────────── -->
+  <section class="score-section" id="score-section">
+    <div class="gauge-card">
+      <div class="gauge-ring" id="gauge-ring">
+        <div class="gauge-inner">
+          <span class="gauge-value" id="gauge-value">—</span>
+          <span class="gauge-label">Risk Score</span>
+        </div>
+      </div>
+      <div class="gauge-meta">
+        <div class="meta-item">
+          <span class="meta-label">ML Raw</span>
+          <span class="meta-value" id="ml-raw">—</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Safe Adj.</span>
+          <span class="meta-value" id="safe-adj">—</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Final</span>
+          <span class="meta-value" id="adjusted-prob">—</span>
+        </div>
+      </div>
+    </div>
+    <div class="verdict-card" id="verdict-card">
+      <div class="verdict-icon" id="verdict-icon">🛡️</div>
+      <h2 class="verdict-text" id="verdict-text">Analyzing…</h2>
+      <p class="verdict-desc" id="verdict-desc"></p>
+    </div>
+  </section>
+
+  <!-- ─── Signals ──────────────────────────────────────────────────── -->
+  <section class="signals-section">
+    <div class="signal-card signal-warn" id="warn-card">
+      <h3>⚠️ Warning Signals</h3>
+      <ul id="warn-list"><li class="empty-state">No warnings detected</li></ul>
+    </div>
+    <div class="signal-card signal-safe" id="safe-card">
+      <h3>✅ Safe Signals</h3>
+      <ul id="safe-list"><li class="empty-state">No safe signals detected</li></ul>
+    </div>
+  </section>
+
+  <!-- ─── Risk Breakdown ──────────────────────────────────────────── -->
+  <section class="breakdown-section">
+    <h3 class="section-title">📊 Risk Category Breakdown</h3>
+    <p class="section-desc">Each category is scored relative to total detected risk. Higher = more contribution to the overall risk score.</p>
+    <div class="breakdown-grid" id="breakdown-grid">
+      <div class="empty-state">No risk data available</div>
+    </div>
+  </section>
+
+  <!-- ─── Structural Features ─────────────────────────────────────── -->
+  <section class="features-section">
+    <h3 class="section-title">🔬 Structural Feature Analysis</h3>
+    <p class="section-desc">24 features extracted across 6 categories. These power the detection engine alongside the ML model.</p>
+    <div class="features-grid" id="features-grid">
+      <div class="empty-state">No feature data available</div>
+    </div>
+  </section>
+
+  <!-- ─── How It Works ────────────────────────────────────────────── -->
+  <section class="how-section">
+    <h3 class="section-title">🧠 How PhishGuard Works</h3>
+    <div class="how-grid">
+      <div class="how-card">
+        <div class="how-num">1</div>
+        <h4>ML Classification</h4>
+        <p>TF-IDF + Logistic Regression model trained on phishing corpora produces a raw probability score.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-num">2</div>
+        <h4>Structural Analysis</h4>
+        <p>24 features across URLs, urgency, impersonation, sender spoofing, and social engineering are extracted.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-num">3</div>
+        <h4>Calibrated Verdict</h4>
+        <p>Risk boosts and safe adjustments calibrate the final score into a 3-tier verdict: Safe / Suspicious / Phishing.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Footer ──────────────────────────────────────────────────── -->
+  <footer class="report-footer">
+    <span>PhishGuard v2.1</span>
+    <span>•</span>
+    <span id="report-timestamp">—</span>
+  </footer>
+
+  <script src="report.js"></script>
+</body>
+</html>

@@ -35,10 +35,12 @@ def predict():
         "explanation": result.get("warning_reasons", []),
         "safe_signals": result.get("safe_reasons", []),
         "ml_raw": result["ml_probability"],
+        "adjusted_probability": result.get("adjusted_probability", 0),
+        "safe_adjustment": result.get("safe_adjustment", 0),
+        "features": result.get("features", {}),
         "risk_breakdown": {
             k: {"score": v["score"], "reason": v["reason"]}
             for k, v in result["risk_data"].items()
-            if v["score"] > 0
         }
     })
 

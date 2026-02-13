@@ -292,6 +292,14 @@
             <span>ML Raw: ${d.ml_raw?.toFixed(1) ?? "–"}%</span>
             <span>•</span>
             <span>PhishGuard v2.1</span>
+            <button class="phishguard-more-btn" id="phishguard-view-more">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+              </svg>
+              <span>View More Metrics</span>
+            </button>
           </div>
         </div>
       `;
@@ -301,6 +309,17 @@
         panel.querySelector(".phishguard-close")?.addEventListener("click", () => {
             panel.remove();
         });
+
+        // View More Metrics button handler
+        const viewMoreBtn = panel.querySelector("#phishguard-view-more");
+        if (viewMoreBtn && response?.data) {
+            viewMoreBtn.addEventListener("click", () => {
+                chrome.runtime.sendMessage({
+                    action: "openReport",
+                    data: response.data,
+                });
+            });
+        }
 
         // Insert panel after the injection target
         const target = SELECTORS.injectionTarget();

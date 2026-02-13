@@ -56,7 +56,9 @@
 }
 
 @keyframes phishguard-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ── Result Panel ────────────────────────────────────────────────────── */
@@ -72,8 +74,15 @@
 }
 
 @keyframes phishguard-slideIn {
-  from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Severity variants */
@@ -81,14 +90,17 @@
   border-color: #ceead6;
   background: #f0faf3;
 }
+
 .phishguard-panel.phishguard-warning {
   border-color: #fde293;
   background: #fef9e7;
 }
+
 .phishguard-panel.phishguard-danger {
   border-color: #f5c6cb;
   background: #fff5f5;
 }
+
 .phishguard-panel.phishguard-error {
   border-color: #dadce0;
   background: #f8f9fa;
@@ -103,10 +115,25 @@
   font-weight: 600;
 }
 
-.phishguard-safe .phishguard-panel-header   { color: #137333; background: rgba(19, 115, 51, 0.06); }
-.phishguard-warning .phishguard-panel-header { color: #b45309; background: rgba(180, 83, 9, 0.06); }
-.phishguard-danger .phishguard-panel-header  { color: #c5221f; background: rgba(197, 34, 31, 0.06); }
-.phishguard-error .phishguard-panel-header   { color: #5f6368; background: rgba(95, 99, 104, 0.06); }
+.phishguard-safe .phishguard-panel-header {
+  color: #137333;
+  background: rgba(19, 115, 51, 0.06);
+}
+
+.phishguard-warning .phishguard-panel-header {
+  color: #b45309;
+  background: rgba(180, 83, 9, 0.06);
+}
+
+.phishguard-danger .phishguard-panel-header {
+  color: #c5221f;
+  background: rgba(197, 34, 31, 0.06);
+}
+
+.phishguard-error .phishguard-panel-header {
+  color: #5f6368;
+  background: rgba(95, 99, 104, 0.06);
+}
 
 .phishguard-verdict {
   font-size: 14px;
@@ -130,6 +157,7 @@
   line-height: 1;
   transition: opacity 0.15s;
 }
+
 .phishguard-close:hover {
   opacity: 1;
 }
@@ -213,9 +241,17 @@
   transition: width 0.5s ease;
 }
 
-.phishguard-breakdown-fill.phishguard-safe    { background: #34a853; }
-.phishguard-breakdown-fill.phishguard-warning { background: #f9ab00; }
-.phishguard-breakdown-fill.phishguard-danger  { background: #ea4335; }
+.phishguard-breakdown-fill.phishguard-safe {
+  background: #34a853;
+}
+
+.phishguard-breakdown-fill.phishguard-warning {
+  background: #f9ab00;
+}
+
+.phishguard-breakdown-fill.phishguard-danger {
+  background: #ea4335;
+}
 
 .phishguard-breakdown-pct {
   flex: 0 0 36px;
@@ -247,4 +283,38 @@
   padding: 2px 6px;
   border-radius: 4px;
   font-size: 11px;
+}
+
+/* ── View More Metrics Button ────────────────────────────────────────── */
+.phishguard-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+  padding: 4px 12px;
+  border: 1px solid #dadce0;
+  border-radius: 14px;
+  background: #fff;
+  color: #1a73e8;
+  font-family: "Google Sans", Roboto, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.phishguard-more-btn:hover {
+  background: #e8f0fe;
+  border-color: #1a73e8;
+  box-shadow: 0 1px 3px rgba(26, 115, 232, 0.15);
+}
+
+.phishguard-more-btn:active {
+  background: #d2e3fc;
+}
+
+.phishguard-more-btn svg {
+  flex-shrink: 0;
 }

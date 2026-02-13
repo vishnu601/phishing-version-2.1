@@ -27,4 +27,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         return true; // Keep the message channel open for async response
     }
+
+    if (request.action === "openReport") {
+        chrome.storage.local.set(
+            { phishguard_report_data: request.data },
+            () => {
+                chrome.tabs.create({
+                    url: chrome.runtime.getURL("report.html"),
+                });
+                sendResponse({ success: true });
+            }
+        );
+        return true;
+    }
 });
